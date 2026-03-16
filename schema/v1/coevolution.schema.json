@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Co-evolution Analysis",
+  "type": "object",
+  "required": ["schema_version", "accession", "method", "n_positions", "positions", "matrix", "top_pairs"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["1"] },
+    "accession":      { "type": "string" },
+    "method":         { "type": "string", "enum": ["mutual_information_apc"] },
+    "n_positions":    { "type": "integer" },
+    "positions":      { "type": "array", "items": { "type": "integer" } },
+    "matrix":         { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
+    "top_pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["position_i", "position_j", "aa_i", "aa_j", "mi_score", "mi_score_apc"],
+        "properties": {
+          "position_i":   { "type": "integer" },
+          "position_j":   { "type": "integer" },
+          "aa_i":         { "type": "string" },
+          "aa_j":         { "type": "string" },
+          "mi_score":     { "type": "number", "minimum": 0 },
+          "mi_score_apc": { "type": "number" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Protein Comparison",
+  "type": "object",
+  "required": ["schema_version", "protein_a", "protein_b", "cluster", "sequence", "phylogenetic", "structural"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["1"] },
+    "protein_a":      { "type": "string" },
+    "protein_b":      { "type": "string" },
+    "cluster":        { "type": "string" },
+    "sequence": {
+      "type": "object",
+      "required": ["pairwise_identity", "pairwise_similarity", "aligned_a", "aligned_b"],
+      "properties": {
+        "pairwise_identity":   { "type": "number", "minimum": 0, "maximum": 1 },
+        "pairwise_similarity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "aligned_a":           { "type": "string" },
+        "aligned_b":           { "type": "string" }
+      }
+    },
+    "phylogenetic": {
+      "type": "object",
+      "required": ["tree_distance", "lca_node", "shared_cluster_fraction"],
+      "properties": {
+        "tree_distance":           { "type": "number", "minimum": 0 },
+        "lca_node":                { "type": "string" },
+        "shared_cluster_fraction": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "structural": {
+      "type": "object",
+      "required": ["available"],
+      "properties": {
+        "available":     { "type": "boolean" },
+        "tm_score":      { "type": "number" },
+        "rmsd_global":   { "type": "number" },
+        "pdb_a":         { "type": "string" },
+        "pdb_b":         { "type": "string" },
+        "alignment_map": { "type": "array" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

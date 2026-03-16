@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Structural Alignment",
+  "type": "object",
+  "required": ["schema_version", "reference_accession", "reference_pdb", "reference_chain", "alignments"],
+  "properties": {
+    "schema_version":      { "type": "string", "enum": ["1"] },
+    "reference_accession": { "type": "string" },
+    "reference_pdb":       { "type": "string" },
+    "reference_chain":     { "type": "string" },
+    "alignments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["query_id", "query_pdb", "query_chain", "tm_score", "rmsd_global", "method", "alignment_map"],
+        "properties": {
+          "query_id":    { "type": "string" },
+          "query_pdb":   { "type": "string" },
+          "query_chain": { "type": "string" },
+          "tm_score":    { "type": "number", "minimum": 0, "maximum": 1 },
+          "rmsd_global": { "type": "number", "minimum": 0 },
+          "method":      { "type": "string" },
+          "alignment_map": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["ref_resnum", "query_resnum", "rmsd"],
+              "properties": {
+                "ref_resnum":   { "type": "integer" },
+                "query_resnum": { "type": "integer" },
+                "rmsd":         { "type": "number", "minimum": 0 }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

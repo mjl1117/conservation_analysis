@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Alignment + Phylogenetic Tree",
+  "type": "object",
+  "required": ["schema_version", "accession", "cluster", "n_sequences", "n_columns", "fasta", "newick", "sequences"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["1"] },
+    "accession":      { "type": "string" },
+    "cluster":        { "type": "string" },
+    "n_sequences":    { "type": "integer" },
+    "n_columns":      { "type": "integer" },
+    "fasta":          { "type": "string" },
+    "newick":         { "type": "string" },
+    "sequences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "sequence", "is_reference", "has_pdb", "pdb_ids", "structure_methods"],
+        "properties": {
+          "id":                { "type": "string" },
+          "description":       { "type": "string" },
+          "sequence":          { "type": "string" },
+          "is_reference":      { "type": "boolean" },
+          "has_pdb":           { "type": "boolean" },
+          "pdb_ids":           { "type": "array", "items": { "type": "string" } },
+          "structure_methods": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

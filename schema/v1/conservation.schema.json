@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Conservation Analysis",
+  "type": "object",
+  "required": ["schema_version", "accession", "cluster", "n_sequences", "n_columns",
+               "gap_zscore_k", "gap_threshold_zscore", "gap_threshold_fraction", "residues"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["1"] },
+    "accession":      { "type": "string" },
+    "cluster":        { "type": "string", "enum": ["UniRef100", "UniRef90", "UniRef50"] },
+    "n_sequences":    { "type": "integer", "minimum": 1 },
+    "n_columns":      { "type": "integer", "minimum": 1 },
+    "gap_zscore_k":   { "type": "number" },
+    "gap_threshold_zscore": { "type": "number" },
+    "gap_threshold_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+    "residues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["position", "amino_acid", "shannon_entropy", "rel_entropy",
+                     "mutability", "conservation", "gap_fraction", "gap_zscore",
+                     "aa_types_count", "aa_types_observed", "mutability_class"],
+        "properties": {
+          "position":          { "type": "integer", "minimum": 1 },
+          "amino_acid":        { "type": "string", "minLength": 1, "maxLength": 1 },
+          "shannon_entropy":   { "type": "number", "minimum": 0 },
+          "rel_entropy":       { "type": "number", "minimum": 0 },
+          "mutability":        { "type": "number", "minimum": 0, "maximum": 1 },
+          "conservation":      { "type": "number", "minimum": 0, "maximum": 1 },
+          "gap_fraction":      { "type": "number", "minimum": 0, "maximum": 1 },
+          "gap_zscore":        { "type": "number" },
+          "aa_types_count":    { "type": "integer", "minimum": 1 },
+          "aa_types_observed": { "type": "array", "items": { "type": "string" } },
+          "mutability_class":  { "type": "string",
+                                 "enum": ["invariant", "conserved", "variable", "hypervariable"] }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
