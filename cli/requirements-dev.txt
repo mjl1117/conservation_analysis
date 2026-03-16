@@ -1,0 +1,4 @@
+pytest>=7.4
+pytest-mock>=3.11
+responses>=0.23
+click[testing]>=8.1
