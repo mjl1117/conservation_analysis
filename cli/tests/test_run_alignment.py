@@ -4,11 +4,11 @@ import pytest
 from scripts.run_alignment import run_clustalo, check_clustalo_available
 
 def test_check_clustalo_available_returns_true_when_found():
-    with patch("shutil.which", return_value="/usr/local/bin/clustalo"):
+    with patch("scripts.run_alignment.shutil.which", return_value="/usr/local/bin/clustalo"):
         assert check_clustalo_available() is True
 
 def test_check_clustalo_available_returns_false_when_missing():
-    with patch("shutil.which", return_value=None):
+    with patch("scripts.run_alignment.shutil.which", return_value=None):
         assert check_clustalo_available() is False
 
 def test_run_clustalo_calls_correct_command(tmp_path):
