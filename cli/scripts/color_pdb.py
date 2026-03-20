@@ -26,13 +26,14 @@ def color_pdb_by_mutability(
     n_seqs = conservation_data.get("n_sequences", "?")
     gap_thresh = conservation_data.get("gap_threshold_fraction", "?")
 
+    # Any existing REMARK  99 lines in the input are filtered out and replaced with this header.
     output_lines = [
-        f"REMARK  99 COLORED BY MUTABILITY",
+        "REMARK  99 COLORED BY MUTABILITY",
         f"REMARK  99 ACCESSION: {accession}",
         f"REMARK  99 N_SEQUENCES: {n_seqs}",
         f"REMARK  99 GAP_THRESHOLD_FRACTION: {gap_thresh}",
         f"REMARK  99 CHAIN: {chain}",
-        f"REMARK  99 COLOR SCALE: 0.00=blue(conserved) 1.00=red(hypervariable)",
+        "REMARK  99 COLOR SCALE: 0.00=blue(conserved) 1.00=red(hypervariable)",
     ]
 
     with open(pdb_path) as f:
@@ -45,6 +46,7 @@ def color_pdb_by_mutability(
                     output_lines.append(stripped)
                     continue
                 val = mut_map.get(resnum, 0.0)
+                # ljust(80) normalises non-standard short ATOM lines to canonical PDB width
                 output_lines.append(_replace_bfactor(stripped.ljust(80), val))
             elif not stripped.startswith("REMARK  99"):
                 output_lines.append(stripped)

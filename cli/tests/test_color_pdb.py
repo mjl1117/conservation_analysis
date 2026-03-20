@@ -48,7 +48,9 @@ def test_color_pdb_hetatm_retained(tmp_path):
     pdb = tmp_path / "test.pdb"
     pdb.write_text("".join(PDB_LINES))
     result = color_pdb_by_mutability(str(pdb), CONSERVATION, chain="A")
-    assert any(l.startswith("HETATM") for l in result.splitlines())
+    hetatm_lines = [l for l in result.splitlines() if l.startswith("HETATM")]
+    assert hetatm_lines  # HETATM is present
+    assert float(hetatm_lines[0][60:66]) == pytest.approx(30.0)  # B-factor unchanged
 
 def test_color_pdb_remark_header_written(tmp_path):
     pdb = tmp_path / "test.pdb"
