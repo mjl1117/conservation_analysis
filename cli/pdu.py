@@ -110,11 +110,12 @@ def metrics(aligned_fasta, ref, out, gap_zscore_k, cluster):
 @click.argument("aligned_fasta")
 @click.option("--ref", required=True)
 @click.option("--out", default="tree.json")
-def phylo(aligned_fasta, ref, out):
+@click.option("--cluster", type=click.Choice(["50", "90", "100"]), default="50", show_default=True)
+def phylo(aligned_fasta, ref, out, cluster):
     """Build NJ phylogenetic tree from aligned FASTA."""
     fasta_text = Path(aligned_fasta).read_text()
     newick = build_nj_tree(fasta_text)
-    tree_json = build_tree_json(ref, "UniRef50", fasta_text, newick, {})
+    tree_json = build_tree_json(ref, CLUSTER_MAP[cluster], fasta_text, newick, {})
     Path(out).write_text(json.dumps(tree_json, indent=2))
     click.echo(f"Tree JSON written to {out}")
 
@@ -163,7 +164,7 @@ def compare(accession_a, accession_b, cluster, out, conservation_a, conservation
     aligned_a, aligned_b = pairwise_align(ref_a_seq, ref_b_seq)
     seq_result = compute_sequence_comparison(aligned_a, aligned_b)
     # Phylogenetic comparison from tree.json if provided
-    phylo_result = {"tree_distance": -1.0, "lca_node": "unknown", "shared_cluster_fraction": 0.0}
+    phylo_result = {"tree_distance": 0.0, "lca_node": "00000000", "shared_cluster_fraction": 0.0}
     if tree_json:
         tree_data = json.loads(Path(tree_json).read_text())
         phylo_result = compute_phylogenetic_comparison(
