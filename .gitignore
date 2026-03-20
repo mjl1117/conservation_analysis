@@ -140,3 +140,6 @@ yarn.lock
 # Environment-specific
 .env.local
 .env.*.local
+
+# Git worktrees
+.worktrees/
