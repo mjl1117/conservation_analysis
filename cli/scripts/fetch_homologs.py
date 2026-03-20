@@ -60,6 +60,8 @@ def fetch_homologs(
     Fetch all members of the UniRef cluster for accession.
     Returns list of (header, sequence) after length filtering and deduplication.
     """
+    if cluster_identity not in CLUSTER_MAP:
+        raise ValueError(f"cluster_identity must be one of {sorted(CLUSTER_MAP)}, got {cluster_identity}")
     cluster_id = f"{CLUSTER_MAP[cluster_identity]}_{accession}"
     url = f"{UNIREF_API}/{cluster_id}/members"
     params: Optional[dict] = {"format": "fasta", "size": 500}
