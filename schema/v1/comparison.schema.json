@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Protein Comparison",
   "type": "object",
-  "required": ["schema_version", "protein_a", "protein_b", "cluster", "sequence", "phylogenetic", "structural"],
+  "required": ["schema_version", "protein_a", "protein_b", "cluster", "sequence", "phylogenetic"],
   "properties": {
     "schema_version": { "type": "string", "enum": ["1"] },
     "protein_a":      { "type": "string" },
@@ -36,7 +36,18 @@
         "rmsd_global":   { "type": "number" },
         "pdb_a":         { "type": "string" },
         "pdb_b":         { "type": "string" },
-        "alignment_map": { "type": "array" }
+        "alignment_map": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["ref_resnum", "query_resnum", "rmsd"],
+            "properties": {
+              "ref_resnum":   { "type": "integer" },
+              "query_resnum": { "type": "integer" },
+              "rmsd":         { "type": "number", "minimum": 0 }
+            }
+          }
+        }
       }
     }
   },

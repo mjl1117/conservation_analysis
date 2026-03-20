@@ -7,8 +7,8 @@
     "schema_version": { "type": "string", "enum": ["1"] },
     "accession":      { "type": "string" },
     "method":         { "type": "string", "enum": ["mutual_information_apc"] },
-    "n_positions":    { "type": "integer" },
-    "positions":      { "type": "array", "items": { "type": "integer" } },
+    "n_positions":    { "type": "integer", "minimum": 1 },
+    "positions":      { "type": "array", "items": { "type": "integer" }, "minItems": 1 },
     "matrix":         { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
     "top_pairs": {
       "type": "array",

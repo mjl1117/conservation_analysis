@@ -6,9 +6,9 @@
   "properties": {
     "schema_version": { "type": "string", "enum": ["1"] },
     "accession":      { "type": "string" },
-    "cluster":        { "type": "string" },
-    "n_sequences":    { "type": "integer" },
-    "n_columns":      { "type": "integer" },
+    "cluster":        { "type": "string", "enum": ["UniRef100", "UniRef90", "UniRef50"] },
+    "n_sequences":    { "type": "integer", "minimum": 1 },
+    "n_columns":      { "type": "integer", "minimum": 1 },
     "fasta":          { "type": "string" },
     "newick":         { "type": "string" },
     "sequences": {
