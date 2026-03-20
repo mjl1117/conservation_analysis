@@ -100,7 +100,7 @@ TINY_ALIGNED_FASTA = (
     ">seq5\nMRL\n"
 )
 
-def test_compute_metrics_returns_valid_schema(sample_conservation_json):
+def test_compute_metrics_returns_valid_schema():
     import jsonschema, json
     from pathlib import Path
     result = compute_metrics(TINY_ALIGNED_FASTA, ref_accession="P0A1C7", gap_zscore_k=1.5)

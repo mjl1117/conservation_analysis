@@ -92,7 +92,7 @@ def compute_metrics(
 
     mean_gap = float(np.mean(all_gap_fracs))
     std_gap = float(np.std(all_gap_fracs))
-    gap_threshold_fraction = mean_gap + gap_zscore_k * std_gap
+    gap_threshold_fraction = min(1.0, mean_gap + gap_zscore_k * std_gap)
 
     residues = []
     ref_pos = 0
