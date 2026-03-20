@@ -4,6 +4,12 @@ import hashlib
 
 from Bio import Align
 
+_SIMILAR_GROUPS = [
+    frozenset("IVLM"), frozenset("FYW"), frozenset("KRH"),
+    frozenset("DE"), frozenset("NQ"), frozenset("ST"),
+]
+_UNKNOWN_LCA = hashlib.sha1(b"unknown").hexdigest()[:8]
+
 
 def pairwise_align(seq_a: str, seq_b: str) -> tuple[str, str]:
     """
@@ -55,14 +61,11 @@ def compute_sequence_comparison(aligned_a: str, aligned_b: str) -> dict:
 
 def _count_positive_subs(seq_a: str, seq_b: str) -> int:
     """Count positions where amino acids are identical or biochemically similar."""
-    SIMILAR_GROUPS = [
-        set("IVLM"), set("FYW"), set("KRH"), set("DE"), set("NQ"), set("ST"),
-    ]
     count = 0
     for a, b in zip(seq_a, seq_b):
         if a == b:
             count += 1
-        elif any(a in g and b in g for g in SIMILAR_GROUPS):
+        elif any(a in g and b in g for g in _SIMILAR_GROUPS):
             count += 1
     return count
 
@@ -76,8 +79,8 @@ def compute_phylogenetic_comparison(
     tree = Phylo.read(io.StringIO(newick), "newick")
 
     # Initialize with safe defaults in case of parse failure
-    tree_distance = -1.0
-    lca_id = "unknown"
+    tree_distance = 0.0
+    lca_id = _UNKNOWN_LCA
     leaves: list[str] = []
 
     try:
