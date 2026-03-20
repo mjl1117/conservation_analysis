@@ -1,0 +1,7 @@
+name = "pdu-clustalo-proxy"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# After deploying: note the worker URL (*.workers.dev) and set
+# VITE_CLUSTALO_PROXY_URL=https://pdu-clustalo-proxy.<your-account>.workers.dev
+# in webapp/.env.local before building
