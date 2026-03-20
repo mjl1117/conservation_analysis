@@ -10,6 +10,12 @@ from Bio import AlignIO
 from scripts.conservation_metrics import GAP_CHARS, compute_gap_zscores, gap_fraction
 
 
+def _consensus(col: list[str]) -> str:
+    """Most common non-gap residue in a column, or '?' if all gaps."""
+    residues = [a for a in col if a not in GAP_CHARS]
+    return Counter(residues).most_common(1)[0][0] if residues else "?"
+
+
 def mutual_information(col_i: list[str], col_j: list[str]) -> float:
     """Mutual information (bits) between two alignment columns, gaps excluded."""
     pairs = [
@@ -54,7 +60,7 @@ def compute_coevolution(
     ref_accession: str,
     gap_zscore_k: float = 1.5,
     top_n: int = 50,
-    cluster: str = "UniRef50",
+    cluster: str = "UniRef50",  # reserved for future use; not currently included in output
 ) -> dict:
     """
     Compute MI co-evolution matrix with APC correction.
@@ -87,6 +93,11 @@ def compute_coevolution(
 
     positions = [rp for rp, _ in included]
     n_pos = len(positions)
+    if n_pos == 0:
+        raise ValueError(
+            f"No positions passed the gap filter (gap_zscore_k={gap_zscore_k}). "
+            "Try increasing gap_zscore_k."
+        )
 
     # Build MI matrix over included columns
     included_cols = [all_columns[ci] for _, ci in included]
@@ -103,18 +114,11 @@ def compute_coevolution(
     for i in range(n_pos):
         for j in range(i + 1, n_pos):
             if mi_matrix[i, j] > 0:
-                col_i = included_cols[i]
-                col_j = included_cols[j]
-
-                def consensus(col: list[str]) -> str:
-                    residues = [a for a in col if a not in GAP_CHARS]
-                    return Counter(residues).most_common(1)[0][0] if residues else "?"
-
                 pairs.append({
                     "position_i": positions[i],
                     "position_j": positions[j],
-                    "aa_i": consensus(col_i),
-                    "aa_j": consensus(col_j),
+                    "aa_i": _consensus(included_cols[i]),
+                    "aa_j": _consensus(included_cols[j]),
                     "mi_score": round(float(mi_matrix[i, j]), 6),
                     "mi_score_apc": round(float(apc_matrix[i, j]), 6),
                 })
