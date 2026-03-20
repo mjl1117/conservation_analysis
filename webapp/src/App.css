@@ -1,0 +1,89 @@
+/* Dark theme — inherits palette from plat-reader-viz */
+:root {
+  --bg: #080c14;
+  --surface: #0f1520;
+  --card: #141c2b;
+  --border: #1e2d42;
+  --text: #e2e8f0;
+  --text-2: #94a3b8;
+  --accent: #63cab7;
+  --accent-b: #4a9eff;
+  --accent-am: #fbbf24;
+  --radius: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 2rem;
+}
+.app-header h1 { color: var(--accent); font-size: 1.4rem; font-weight: 600; }
+.app-main { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  margin-bottom: 1rem;
+}
+
+.btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.btn:hover { opacity: 0.85; }
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.tab-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.tab {
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+.error-banner {
+  background: #2d1a1a;
+  border: 1px solid #7f1d1d;
+  color: #fca5a5;
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.loading-bar {
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-b));
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 2px;
+  margin-bottom: 1rem;
+}
+@keyframes loading { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
