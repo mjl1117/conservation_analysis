@@ -1,7 +1,6 @@
 """PyRosetta CE-align structural alignment."""
 from __future__ import annotations
 import sys
-from typing import Optional
 
 
 def check_pyrosetta_available() -> bool:

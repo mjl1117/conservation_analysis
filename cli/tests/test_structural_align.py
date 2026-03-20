@@ -12,7 +12,6 @@ def test_check_pyrosetta_available_true():
         assert check_pyrosetta_available() is True
 
 def test_check_pyrosetta_available_false():
-    import sys
     with patch.dict("sys.modules", {"pyrosetta": None}):
         assert check_pyrosetta_available() is False
 
