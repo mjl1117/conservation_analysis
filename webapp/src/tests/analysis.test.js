@@ -1,5 +1,7 @@
 // webapp/src/tests/analysis.test.js
 import { describe, it, expect } from "vitest";
+import { parseNewick, buildDistanceMatrix, neighborJoining } from "../analysis/phylo.js";
+import { mutualInformation, applyApc, computeCoevolution } from "../analysis/coevolution.js";
 import {
   shannonEntropy,
   relEntropy,
@@ -111,5 +113,130 @@ describe("computeMetrics", () => {
   it("schema_version is '1'", () => {
     const result = computeMetrics(tinyAlignment, "P0A1C7");
     expect(result.schema_version).toBe("1");
+  });
+});
+
+// --- phylo.js ---
+
+describe("parseNewick", () => {
+  it("parses a simple Newick string into a tree object", () => {
+    const tree = parseNewick("(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);");
+    expect(tree).toBeDefined();
+    expect(tree.children).toHaveLength(3);
+  });
+  it("leaf nodes have name and no children", () => {
+    const tree = parseNewick("(A:0.1,B:0.2);");
+    const leaves = [];
+    const walk = (node) => { if (!node.children?.length) leaves.push(node.name); else node.children.forEach(walk); };
+    walk(tree);
+    expect(leaves).toContain("A");
+    expect(leaves).toContain("B");
+  });
+});
+
+describe("buildDistanceMatrix", () => {
+  it("returns symmetric matrix with zero diagonal", () => {
+    const seqs = [
+      { id: "a", seq: "MKKLL" },
+      { id: "b", seq: "MRKLL" },
+      { id: "c", seq: "MRRLL" },
+    ];
+    const dm = buildDistanceMatrix(seqs);
+    expect(dm.length).toBe(3);
+    expect(dm[0][0]).toBeCloseTo(0);
+    expect(dm[0][1]).toBeCloseTo(dm[1][0]); // symmetric
+  });
+  it("distance between identical sequences is 0", () => {
+    const seqs = [{ id: "a", seq: "MKKLL" }, { id: "b", seq: "MKKLL" }];
+    const dm = buildDistanceMatrix(seqs);
+    expect(dm[0][1]).toBeCloseTo(0);
+  });
+});
+
+describe("neighborJoining", () => {
+  it("returns a Newick string ending with semicolon", () => {
+    const seqs = [
+      { id: "P0A1C7", seq: "MKKLLVIGG" },
+      { id: "Q9X1X2", seq: "MKKLLVIGG" },
+      { id: "Q8ZRE4", seq: "MKKLLVIAG" },
+      { id: "P12345", seq: "MRRLLVIAG" },
+    ];
+    const dm = buildDistanceMatrix(seqs);
+    const newick = neighborJoining(seqs.map(s => s.id), dm);
+    expect(newick.endsWith(";")).toBe(true);
+    expect(newick).toContain("P0A1C7");
+    expect(newick).toContain("P12345");
+  });
+});
+
+// --- coevolution.js ---
+
+describe("mutualInformation", () => {
+  it("returns 1.0 for perfectly correlated columns", () => {
+    const colI = ["A","A","A","A","A","B","B","B","B","B"];
+    const colJ = ["A","A","A","A","A","B","B","B","B","B"];
+    expect(mutualInformation(colI, colJ)).toBeCloseTo(1.0);
+  });
+  it("returns 0 for all-gap column pair", () => {
+    expect(mutualInformation(["-","-"],["-","-"])).toBeCloseTo(0.0);
+  });
+});
+
+describe("applyApc", () => {
+  it("returns matrix of same shape", () => {
+    const mi = [
+      [0, 0.8, 0.2, 0.1],
+      [0.8, 0, 0.3, 0.1],
+      [0.2, 0.3, 0, 0.05],
+      [0.1, 0.1, 0.05, 0],
+    ];
+    const result = applyApc(mi);
+    expect(result.length).toBe(4);
+    expect(result[0].length).toBe(4);
+  });
+  it("diagonal is zero after APC", () => {
+    const mi = [[0,0.8],[0.8,0]];
+    const result = applyApc(mi);
+    expect(result[0][0]).toBeCloseTo(0);
+    expect(result[1][1]).toBeCloseTo(0);
+  });
+  it("all values are >= 0 (clipped)", () => {
+    const mi = [[0,0.1],[0.1,0]];
+    const result = applyApc(mi);
+    result.forEach(row => row.forEach(v => expect(v).toBeGreaterThanOrEqual(0)));
+  });
+});
+
+describe("computeCoevolution", () => {
+  const TINY = [
+    { id: "P0A1C7", seq: "MKKLL" },
+    { id: "seq2",   seq: "MKKLL" },
+    { id: "seq3",   seq: "MRKLL" },
+    { id: "seq4",   seq: "MRRLL" },
+    { id: "seq5",   seq: "MKK-L" },
+  ];
+  it("returns schema_version '1'", () => {
+    const result = computeCoevolution(TINY, "P0A1C7");
+    expect(result.schema_version).toBe("1");
+  });
+  it("positions array contains only non-gap reference positions", () => {
+    const result = computeCoevolution(TINY, "P0A1C7");
+    expect(Array.isArray(result.positions)).toBe(true);
+    result.positions.forEach(p => expect(typeof p).toBe("number"));
+  });
+  it("matrix dimensions match positions length", () => {
+    const result = computeCoevolution(TINY, "P0A1C7");
+    expect(result.matrix.length).toBe(result.n_positions);
+    expect(result.matrix[0].length).toBe(result.n_positions);
+  });
+  it("top_pairs entries have required fields", () => {
+    const result = computeCoevolution(TINY, "P0A1C7");
+    if (result.top_pairs.length > 0) {
+      const pair = result.top_pairs[0];
+      expect(pair).toHaveProperty("position_i");
+      expect(pair).toHaveProperty("position_j");
+      expect(pair).toHaveProperty("mi_score");
+      expect(pair).toHaveProperty("mi_score_apc");
+    }
   });
 });
